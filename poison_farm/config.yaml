@@ -1,4 +1,5 @@
 app_title: "Where Winds Meet"
+key_stop_script: 'esc'
 key_meteor_flight: "SPACE"
 key_fly: ' '
 key_land: 'q'
