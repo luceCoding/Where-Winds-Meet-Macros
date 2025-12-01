@@ -56,7 +56,7 @@ if app is not None:
         game.send_keystrokes(key_land) # Land on ground
         game.send_keystrokes(key_land) # Land on ground
         game.send_keystrokes(key_land) # Land on ground
-        time.sleep(2.75)
+        time.sleep(2.5)
         if stop_script:
             break
 

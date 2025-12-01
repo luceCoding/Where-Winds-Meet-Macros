@@ -1,5 +1,10 @@
 # Where-Winds-Meet-Macros
-Macros for Where Winds Meet in Python
+Lightweight collection of macros for the game Where Winds Meet in Python.
+This version of macros will allow you to minimize the game window and have this running in the background.
+Recommended to lower your graphics settings for long macro sessions.
+
+# WARNING
+These macros simulate keyboard presses and do NOT inject or manipulate anything in memory. Therefore, will be very diffucult to detect. Either way it may break terms of service so use at your own risk.
 
 # Requirements
 - Python 3+
