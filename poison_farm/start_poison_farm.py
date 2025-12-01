@@ -31,7 +31,9 @@ if app is not None:
         time.sleep(1.75)
         game.send_keystrokes(key_fly)
         game.send_keystrokes(key_fly)
-        time.sleep(3)
+        time.sleep(3.5)
+        game.send_keystrokes(key_land) # Land on ground
+        game.send_keystrokes(key_land) # Land on ground
         game.send_keystrokes(key_land) # Land on ground
         game.send_keystrokes(key_land) # Land on ground
         time.sleep(2.75)
