@@ -1,21 +1,34 @@
 import os
 import cv2 as cv
 import matplotlib.pyplot as plt
+import argparse
+import glob
 
 
 def plot_image_thresholds(filename, threshold):
-
     # Build full path to images folder relative to script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(script_dir, "images", filename)
+    images_dir = os.path.join(script_dir, "images")
 
-    if not os.path.exists(image_path):
-        print(f"Image '{filename}' not found in images folder.")
-        return
+    if filename is None:
+        # Find all image files in the folder
+        image_files = glob.glob(os.path.join(images_dir, "*.*"))
+        if not image_files:
+            print("No images found in the 'images' folder.")
+            return
+        # Pick the most recently modified image
+        image_path = max(image_files, key=os.path.getmtime)
+        print(
+            f"No filename given. Using most recent image: {os.path.basename(image_path)}")
+    else:
+        image_path = os.path.join(images_dir, filename)
+        if not os.path.exists(image_path):
+            print(f"Image '{filename}' not found in images folder.")
+            return
 
     img = cv.imread(image_path)
     if img is None:
-        print(f"Failed to load image '{filename}'.")
+        print(f"Failed to load image '{os.path.basename(image_path)}'.")
         return
 
     imgGray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -64,4 +77,12 @@ def plot_image_thresholds(filename, threshold):
     plt.show()
 
 
-plot_image_thresholds(filename='screenshot_1764683209_0.png', threshold=45)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Plot image and threshold results.")
+    parser.add_argument("--threshold", type=int, help="Threshold value (0-255)")
+    parser.add_argument("--filename", type=str, default=None,
+                        help="Image filename in the 'images' folder (default: most recent image)")
+    args = parser.parse_args()
+
+    plot_image_thresholds(filename=args.filename, threshold=args.threshold)
