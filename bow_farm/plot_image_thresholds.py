@@ -3,6 +3,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import argparse
 import glob
+import math
 
 
 def plot_image_thresholds(filename, threshold):
@@ -11,12 +12,10 @@ def plot_image_thresholds(filename, threshold):
     images_dir = os.path.join(script_dir, "images")
 
     if filename is None:
-        # Find all image files in the folder
         image_files = glob.glob(os.path.join(images_dir, "*.*"))
         if not image_files:
             print("No images found in the 'images' folder.")
             return
-        # Pick the most recently modified image
         image_path = max(image_files, key=os.path.getmtime)
         print(
             f"No filename given. Using most recent image: {os.path.basename(image_path)}")
@@ -43,34 +42,51 @@ def plot_image_thresholds(filename, threshold):
     plt.show()
 
     # Threshold types
+    thresholds = [
+        threshold,
+        threshold,
+        threshold,
+        threshold,
+        threshold,
+        0,
+    ]
     thresOpt = [
         cv.THRESH_BINARY,
         cv.THRESH_BINARY_INV,
         cv.THRESH_TOZERO,
         cv.THRESH_TOZERO_INV,
-        cv.THRESH_TRUNC
+        cv.THRESH_TRUNC,
+        cv.THRESH_BINARY + cv.THRESH_OTSU,  # Attempts to separate foreground/background
     ]
     thresNames = [
         'Binary',
         'BinaryInv',
         'ToZero',
         'ToZeroInv',
-        'Trunc'
+        'Trunc',
+        'Otsu',
     ]
 
-    # Plot original grayscale image
-    plt.figure(figsize=(10, 5))
-    plt.subplot(2, 3, 1)
+    total_images = 1 + len(thresOpt)   # 1 = original image
+    cols = 3
+    rows = math.ceil(total_images / cols)
+
+    plt.figure(figsize=(12, rows * 4))
+
+    # Plot original
+    plt.subplot(rows, cols, 1)
     plt.imshow(imgGray, cmap='gray')
     plt.title('Original')
     plt.axis('off')
 
-    # Apply and plot each threshold
-    for i in range(len(thresOpt)):
-        plt.subplot(2, 3, i+2)
-        _, imgThres = cv.threshold(imgGray, threshold, 255, thresOpt[i])
-        plt.imshow(imgThres, cmap='gray')
-        plt.title(thresNames[i])
+    # Plot thresholded images
+    for i, (name, opt, thres) in enumerate(zip(thresNames, thresOpt, thresholds)):
+        pos = i + 2  # shift by 1 for original image
+        _, timg = cv.threshold(imgGray, thres, 255, opt)
+
+        plt.subplot(rows, cols, pos)
+        plt.imshow(timg, cmap='gray')
+        plt.title(name)
         plt.axis('off')
 
     plt.tight_layout()
@@ -80,7 +96,8 @@ def plot_image_thresholds(filename, threshold):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Plot image and threshold results.")
-    parser.add_argument("--threshold", type=int, help="Threshold value (0-255)")
+    parser.add_argument("--threshold", type=int,
+                        help="Threshold value (0-255)")
     parser.add_argument("--filename", type=str, default=None,
                         help="Image filename in the 'images' folder (default: most recent image)")
     args = parser.parse_args()
