@@ -6,7 +6,17 @@ import time
 # ------------------------------
 # Load config
 # ------------------------------
-with open("config.yaml", "r") as f:
+import os
+import yaml
+
+# Get the directory where THIS script lives
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Build the full path to config.yaml in that directory
+CONFIG_PATH = os.path.join(SCRIPT_DIR, "config.yaml")
+
+# Load config
+with open(CONFIG_PATH, "r") as f:
     config = yaml.safe_load(f)
 
 # Unpack config
