@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import argparse
 import glob
 import math
+import numpy as np
 
 
 def plot_image_thresholds(filename, threshold):
@@ -30,12 +31,23 @@ def plot_image_thresholds(filename, threshold):
         print(f"Failed to load image '{os.path.basename(image_path)}'.")
         return
 
-    imgGray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    imgBlur = cv.GaussianBlur(imgGray, (5, 5), 0)  # Reduces image noise
-    # imgBlur = cv.medianBlur(imgGray, 5)
+    # Blur first
+    imgBlur = cv.GaussianBlur(img, (5, 5), 0)
+
+    # Convert to HSV and create mask
+    hsv = cv.cvtColor(imgBlur, cv.COLOR_BGR2HSV)
+    lower_red = np.array([0, 50, 225]) # Filter for whitish red flash
+    upper_red = np.array([10, 200, 255])
+    mask_red = cv.inRange(hsv, lower_red, upper_red)
+
+    # Apply mask to blurred BGR image
+    imgMasked = cv.bitwise_and(imgBlur, imgBlur, mask=mask_red)
+
+    # Convert to grayscale for thresholding
+    imgGray = cv.cvtColor(imgMasked, cv.COLOR_BGR2GRAY)
 
     # Plot grayscale histogram
-    hist = cv.calcHist([imgBlur], [0], None, [256], [0, 256])
+    hist = cv.calcHist([imgGray], [0], None, [256], [0, 256])
     plt.figure()
     plt.plot(hist)
     plt.xlabel('Bins')
@@ -77,15 +89,15 @@ def plot_image_thresholds(filename, threshold):
 
     # Plot original
     plt.subplot(rows, cols, 1)
-    plt.imshow(imgBlur, cmap='gray')
+    plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
     plt.title('Original')
     plt.axis('off')
 
-    # Plot thresholded images
+    # Apply and plot each threshold
+    imgGrayMasked = cv.cvtColor(imgMasked, cv.COLOR_BGR2GRAY)  # use imgMasked instead of img_red
     for i, (name, opt, thres) in enumerate(zip(thresNames, thresOpt, thresholds)):
-        pos = i + 2  # shift by 1 for original image
-        _, timg = cv.threshold(imgBlur, thres, 255, opt)
-
+        pos = i + 2
+        _, timg = cv.threshold(imgGrayMasked, thres, 255, opt)
         plt.subplot(rows, cols, pos)
         plt.imshow(timg, cmap='gray')
         plt.title(name)
