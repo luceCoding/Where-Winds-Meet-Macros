@@ -1,0 +1,5 @@
+app_title: "Where Winds Meet"
+key_stop_script: 'F2'
+key_deflection: "]"
+frame_delay: 1 # Number of deflection frames detected before executing a deflection
+white_pixel_threshold_range: [0.175, 0.7] # Percentage of white pixels after preprocessing the image

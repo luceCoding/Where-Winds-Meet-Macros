@@ -1,0 +1,81 @@
+# --- Python Bytecode ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments ---
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# --- Distribution / Packaging ---
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# --- Installer Logs ---
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Unit Test / Coverage ---
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# --- Pytest ---
+.pytest_cache/
+
+# --- Jupyter Notebook checkpoints ---
+.ipynb_checkpoints/
+
+# --- MyPy / Type Checking ---
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# --- Pyre Type Checker ---
+.pyre/
+
+# --- Pycharm / VSCode / IDE ---
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+
+# --- Local Config ---
+*.local
+*.env
+.env.*
+
+# --- Compiled C Extensions ---
+*.so
+
+# --- SQLite Databases ---
+*.sqlite3
+
+# --- Coverage Reports ---
+htmlcov/
+
+# --- Sphinx Documentation ---
+docs/_build/
+
+# --- Misc ---
+*.tmp
+
+# --- Images ---
+*.png
