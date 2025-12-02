@@ -31,9 +31,11 @@ def plot_image_thresholds(filename, threshold):
         return
 
     imgGray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    imgBlur = cv.GaussianBlur(imgGray, (5, 5), 0)  # Reduces image noise
+    # imgBlur = cv.medianBlur(imgGray, 5)
 
     # Plot grayscale histogram
-    hist = cv.calcHist([imgGray], [0], None, [256], [0, 256])
+    hist = cv.calcHist([imgBlur], [0], None, [256], [0, 256])
     plt.figure()
     plt.plot(hist)
     plt.xlabel('Bins')
@@ -75,14 +77,14 @@ def plot_image_thresholds(filename, threshold):
 
     # Plot original
     plt.subplot(rows, cols, 1)
-    plt.imshow(imgGray, cmap='gray')
+    plt.imshow(imgBlur, cmap='gray')
     plt.title('Original')
     plt.axis('off')
 
     # Plot thresholded images
     for i, (name, opt, thres) in enumerate(zip(thresNames, thresOpt, thresholds)):
         pos = i + 2  # shift by 1 for original image
-        _, timg = cv.threshold(imgGray, thres, 255, opt)
+        _, timg = cv.threshold(imgBlur, thres, 255, opt)
 
         plt.subplot(rows, cols, pos)
         plt.imshow(timg, cmap='gray')
