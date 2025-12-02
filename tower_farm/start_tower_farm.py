@@ -2,12 +2,11 @@ from pywinauto.application import Application
 import keyboard
 import yaml
 import time
+import os
 
 # ------------------------------
 # Load config
 # ------------------------------
-import os
-import yaml
 
 # Get the directory where THIS script lives
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
