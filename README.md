@@ -15,7 +15,7 @@ These macros simulate keyboard presses and do NOT inject or manipulate anything 
 2. Open command prompt as admin.
 3. Type the following commands while in the current directory of the project root folder. Replace the path with where your project folder is.
     ```
-    cd "root/folder/path/here"
+    cd "root\folder\path\here"
     pip install -r requirements.txt
     ```
 4. Select a script folder and continue to follow their README.

@@ -11,6 +11,6 @@ Requires constructing a tower to reset mobs and the Snow Oath mount to collect i
 5. Open command prompt as admin.
 6. Type the following commands, replace the path with the correct folder path.
     ```
-    python "path/to/start_tower_farm.py"
+    python "path\to\tower_farm\start_tower_farm.py"
     ```
 7. Use Ctrl + C in the command prompt or the dedicated key in your config.yaml to stop the program.
