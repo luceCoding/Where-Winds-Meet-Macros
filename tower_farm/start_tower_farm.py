@@ -3,116 +3,95 @@ import keyboard
 import yaml
 import time
 import os
-
-# ------------------------------
-# Load config
-# ------------------------------
-
-# Get the directory where THIS script lives
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Build the full path to config.yaml in that directory
-CONFIG_PATH = os.path.join(SCRIPT_DIR, "config.yaml")
-
-# Load config
-with open(CONFIG_PATH, "r") as f:
-    config = yaml.safe_load(f)
-
-# Unpack config
-(
-    app_title,
-    key_meteor_flight,
-    key_fly,
-    key_land,
-    key_call_horse,
-    key_fan_heal,
-    key_dragons_breath,
-    key_stop_script
-) = (
-    config['app_title'],
-    config['key_meteor_flight'],
-    config['key_fly'],
-    config['key_land'],
-    config['key_call_horse'],
-    config['key_fan_heal'],
-    config['key_dragons_breath'],
-    config['key_stop_script']
-)
-
-# ------------------------------
-# Connect to app
-# ------------------------------
-try:
-    app = Application().connect(title=app_title, found_index=0)
-    game = app[app_title]
-    print("Game application found. Starting script.")
-except Exception:
-    print("Error: Game application not found!")
-    exit()
+import sys
 
 
-# ------------------------------
-# Stop flag + hotkey
-# ------------------------------
-stop_script = False
-
-def stop():
-    global stop_script
-    stop_script = True
-    print("Stop key pressed — stopping program...")
-
-keyboard.add_hotkey(key_stop_script, stop)
-
-
-# ------------------------------
-# Helper: run steps safely
-# ------------------------------
-def run_step(action, sleep_time=0):
-    """
-    Executes a keystroke action with optional sleep,
-    automatically stops if stop flag is triggered.
-    """
-    if stop_script:
+def run_step(game, actions, sleep_time, stop_flag):
+    """Send keystrokes safely."""
+    if stop_flag["stop"]:
         return False
 
-    if isinstance(action, str):
-        game.send_keystrokes(action)
-    else:
-        # list of actions
-        for a in action:
-            game.send_keystrokes(a)
+    for a in actions:
+        game.send_keystrokes(a)
+        if stop_flag["stop"]:
+            return False
 
     if sleep_time:
-        for _ in range(int(sleep_time * 10)):  # check stop every 0.1s
-            if stop_script:
-                return False
-            time.sleep(0.1)
+        time.sleep(sleep_time)
+        if stop_flag["stop"]:
+            return False
+
     return True
 
 
-# Pre-formatted meteor flight hold commands
-meteor_down = f"{{{key_meteor_flight} DOWN}}"
-meteor_up   = f"{{{key_meteor_flight} UP}}"
+def main():
 
-# ------------------------------
-# Main Loop
-# ------------------------------
-n_rotations = 0
+    # ------------------------------
+    # Load config
+    # ------------------------------
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, "config.yaml")
 
-while not stop_script:
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+
+    app_title = config["app_title"]
+    key_meteor_flight = config["key_meteor_flight"]
+    key_fly = config["key_fly"]
+    key_land = config["key_land"]
+    key_call_horse = config["key_call_horse"]
+    key_fan_heal = config["key_fan_heal"]
+    key_dragons_breath = config["key_dragons_breath"]
+    key_stop_script = config["key_stop_script"]
+
+    # ------------------------------
+    # Connect to app
+    # ------------------------------
+    try:
+        app = Application().connect(title=app_title, found_index=0)
+        game = app[app_title]
+        print("Game application found. Starting script.")
+    except Exception as e:
+        print(f"Error: Game application not found: {e}")
+        sys.exit(1)
+
+    # ------------------------------
+    # Stop flag + hotkey
+    # ------------------------------
+    stop_flag = {"stop": False}
+
+    def stop():
+        stop_flag["stop"] = True
+        print("Stop key pressed — stopping program...")
+
+    keyboard.add_hotkey(key_stop_script, stop)
+
+    # Pre-built keystrokes
+    meteor_flight_down = f"{{{key_meteor_flight} DOWN}}"
+    meteor_flight_up = f"{{{key_meteor_flight} UP}}"
 
     steps = [
-        ([meteor_down, meteor_up], 1.75),   # Start Meteor Flight
-        ([key_fly, key_fly],        3.5),   # Continue Flight
-        ([key_land] * 4,            2.5),   # Land spam
-        (key_call_horse,            1.75),  # Call horse
-        (key_dragons_breath,        3),     # Breath
-        (key_fan_heal,              8),     # Heal
+        ([meteor_flight_down, meteor_flight_up],  1.75),
+        ([key_fly, key_fly],        3.5),
+        ([key_land] * 4,            2.5),
+        ([key_call_horse],          1.75),
+        ([key_dragons_breath],      3),
+        ([key_fan_heal],            8),
     ]
 
-    for action, delay in steps:
-        if not run_step(action, delay):
-            break
+    # ------------------------------
+    # Main loop
+    # ------------------------------
+    n_rotations = 0
 
-    n_rotations += 1
-    print(f"Run {n_rotations} completed.")
+    while not stop_flag["stop"]:
+        for actions, delay in steps:
+            if not run_step(game, actions, delay, stop_flag):
+                return
+
+        n_rotations += 1
+        print(f"Run {n_rotations} completed.")
+
+
+if __name__ == "__main__":
+    main()
