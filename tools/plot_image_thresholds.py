@@ -81,14 +81,14 @@ def plot_image_thresholds(filename, threshold, lower_color, upper_color):
     plots = [
         ("Original", cv.cvtColor(img, cv.COLOR_BGR2RGB)),
         ("Grayscale", gray),
-        (f"Color Filter ({pixel_percent_white(gray_color_only):.2f}%)",
+        (f"Color Filter ({pixel_percent_white(gray_color_only):.3f}%)",
          gray_color_only)
     ]
 
     # Add thresholded images
     for name, opt, th in threshold_ops:
         _, processed = cv.threshold(gray_pre, th, 255, opt)
-        plots.append((f"{name} ({pixel_percent_white(processed):.2f}%)",
+        plots.append((f"{name} ({pixel_percent_white(processed):.3f}%)",
                       processed))
 
     # Calculate grid

@@ -9,6 +9,7 @@ import yaml
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from tools.plot_image_thresholds import pixel_percent_white, preprocess_color_only
+from tools.capture_image import get_monitor
 
 
 def main():
@@ -25,7 +26,9 @@ def main():
     app_title = config["app_title"]
     key_stop_script = config["key_stop_script"]
     key_deflection = config["key_deflection"]
-    white_pixel_threshold_range = config["white_pixel_threshold_range"]
+    lower_hsv_color_filter = config["lower_hsv_color_filter"]
+    upper_hsv_color_filter = config["upper_hsv_color_filter"]
+    threshold_low, threshold_high = config["white_pixel_threshold_range"]
     frame_delay = config["frame_delay"]
 
     try:
@@ -41,36 +44,32 @@ def main():
     keyboard.add_hotkey(
         key_stop_script, lambda: stop_flag.update({"stop": True}))
 
+    monitor = get_monitor(game, partial_percent=0.1)
+
     # Create persistent mss instance
     with mss.mss() as sct:
-        monitor = {
-            "top": rect.top,
-            "left": rect.left,
-            "width": rect.width(),
-            "height": rect.height()
-        }
 
         n_red_frames = 0
 
         while not stop_flag["stop"]:
-            img = np.array(sct.grab(monitor))
-            img = cv.cvtColor(img, cv.COLOR_BGRA2BGR)
+            img = cv.cvtColor(np.array(sct.grab(monitor)), cv.COLOR_BGRA2BGR)
 
             gray_color_only = preprocess_color_only(img, 
-                                                    [0, 50, 255], 
-                                                    [10, 200, 255],
+                                                    lower_hsv_color_filter, 
+                                                    upper_hsv_color_filter,
                                                     )
 
-            percent_white = pixel_percent_white(gray_color_only)
+            _, binary = cv.threshold(gray_color_only, 20, 255, cv.THRESH_BINARY)
+            percent_white = pixel_percent_white(binary)
 
-            if percent_white >= white_pixel_threshold_range[0] and percent_white <= white_pixel_threshold_range[1]:
-                print(f"Percent of white pixels: {percent_white:.3f}%")
+            if percent_white >= threshold_low and percent_white <= threshold_high:
+                #print(f"Percent of white pixels: {percent_white:.3f}%")
                 n_red_frames += 1
                 if n_red_frames >= frame_delay:
                     game.send_keystrokes(key_deflection)
-                    print(f"Deflection!")
-            elif percent_white < white_pixel_threshold_range[0]:
-                n_red_frames = 0
+                    #print(f"Deflection!")
+            elif percent_white < threshold_low:
+                n_red_frames = 0 # No more red frames, reset
 
 
 if __name__ == "__main__":

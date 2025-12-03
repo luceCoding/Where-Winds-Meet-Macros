@@ -10,6 +10,21 @@ from pynput import mouse as pynput_mouse
 import threading
 
 
+def get_monitor(game, partial_percent=0.1):
+
+    rect = game.rectangle()
+    width_trim = int(rect.width() * partial_percent)
+    height_trim = int(rect.height() * partial_percent)
+    pp = (1 - (partial_percent * 2))
+    monitor = {
+        "top": rect.top + height_trim,
+        "left": rect.left + width_trim,
+        "width": int(rect.width() * pp),
+        "height": int(rect.height() * pp),
+    }
+    return monitor
+
+
 def main():
     # Directory to save screenshots
     SAVE_DIR = os.path.join(os.path.dirname(
@@ -19,7 +34,7 @@ def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(
         description="Capture a window on a hotkey press.")
-    parser.add_argument("--hotkey", type=str, default='p',
+    parser.add_argument("--hotkey", type=str, default='l',
                         help="Key to trigger screenshot (keyboard key or mouse side button: x1, x2)")
     parser.add_argument("--app_title", type=str, default="Where Winds Meet",
                         help="Window title of the application (default: 'Where Winds Meet')")
@@ -31,24 +46,19 @@ def main():
     try:
         app = Application().connect(title=APP_TITLE, found_index=0)
         game = app[APP_TITLE]
-        rect = game.rectangle()
         print(f"Connected to '{APP_TITLE}' window.")
     except Exception as e:
         print(f"Could not find window '{APP_TITLE}': {e}")
         return
 
+    monitor = get_monitor(game, partial_percent=0.1)
+
     # Capture function
     def capture():
         with mss.mss() as sct:
-            monitor = {
-                "top": rect.top,
-                "left": rect.left,
-                "width": rect.width(),
-                "height": rect.height()
-            }
+
             img = np.array(sct.grab(monitor))
-            if img.shape[2] == 4:
-                img = cv.cvtColor(img, cv.COLOR_BGRA2BGR)
+            img = cv.cvtColor(img, cv.COLOR_BGRA2BGR)
             filename = os.path.join(
                 SAVE_DIR, f"screenshot_{int(time.time())}.png")
             cv.imwrite(filename, img)
