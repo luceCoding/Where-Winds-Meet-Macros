@@ -36,6 +36,7 @@ def main():
         config = yaml.safe_load(f)
 
     app_title = config["app_title"]
+    minimize_window_at_startup = config["minimize_window_at_startup"]
     key_stop_script = config["key_stop_script"]
     steps = config["steps"]
 
@@ -62,6 +63,12 @@ def main():
     keyboard.add_hotkey(key_stop_script, stop)
 
     # ------------------------------
+    # Minimize the window
+    # ------------------------------
+    if minimize_window_at_startup:
+        game.minimize()
+
+    # ------------------------------
     # Main loop
     # ------------------------------
     n_rotations = 0
@@ -72,7 +79,7 @@ def main():
                 return
 
         n_rotations += 1
-        print(f"Run {n_rotations} completed.")
+        #print(f"Run {n_rotations} completed.")
 
 
 if __name__ == "__main__":

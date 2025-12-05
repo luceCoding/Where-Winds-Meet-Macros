@@ -36,6 +36,7 @@ def main():
         config = yaml.safe_load(f)
 
     app_title = config["app_title"]
+    minimize_window_at_startup = config["minimize_window_at_startup"]
     key_meteor_flight = config["key_meteor_flight"]
     key_fly = config["key_fly"]
     key_land = config["key_land"]
@@ -78,6 +79,12 @@ def main():
         ([key_dragons_breath],      3),
         ([key_fan_heal],            8),
     ]
+
+    # ------------------------------
+    # Minimize the window
+    # ------------------------------
+    if minimize_window_at_startup:
+        game.minimize()
 
     # ------------------------------
     # Main loop

@@ -1,13 +1,14 @@
 app_title: "Where Winds Meet"
+minimize_window_at_startup: True
 key_stop_script: 'F3'
 # ------------------------------
-# Here you may customize your own custom macros.
+# Below you may customize your own custom macros.
 # The configuration is quite simple, each step will be executed in order.
-# Each step is formatted as such: ("YOUR_KEYSTROKES_HERE", DELAY_IN_SECONDS_HERE),
+# Each step is formatted as such: ("YOUR_KEYSTROKES_HERE", DELAY_IN_SECONDS_UNTIL_NEXT_STEP_HERE),
 # You may add as many steps as you like.
 # Mouse inputs are currently unsupported and maybe added later if there is demand.
 # Look at the pywinauto documentation send_keystrokes() for any advanced keystrokes you may need, such as holding down a key, etc...
 # ------------------------------
 steps: [
-  ["222", 22],
+  ["e", 1],
 ]

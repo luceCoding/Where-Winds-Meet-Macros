@@ -1,4 +1,5 @@
 app_title: "Where Winds Meet"
+minimize_window_at_startup: True
 key_stop_script: 'F3'
 key_meteor_flight: "SPACE"
 key_fly: ' '
