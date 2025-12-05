@@ -1,9 +1,9 @@
-# Custom macro scripta
+# Custom macro script
 This is a custom macro script for Where Winds Meet.
 You may edit the config to add custom macros.
 Some uses for this script can be to afk farm herbs or fish using tai chi at a pond while standing in one place.
 
-# Tower farm setup
+# Custom macro script setup
 1. Edit the config.yaml to match your keyboard controls and macros.
 2. Go into online mode and select a location that spawns resources within your character's interactive radius. 
 3. Open command prompt as admin.
